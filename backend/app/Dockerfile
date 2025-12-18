@@ -21,5 +21,5 @@ ENV UV_COMPILE_BYTECODE=1
 # COPY ./alembic/ ./alembic/
 #
 # CMD ["uv", "run", "fastapi", "run", "--workers", "4", "./app/main.py"]
-#
-# EXPOSE 8000
+
+EXPOSE 8000

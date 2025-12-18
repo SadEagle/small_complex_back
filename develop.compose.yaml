@@ -1,0 +1,9 @@
+services:
+  backend:
+    command: /bin/bash -l
+    stdin_open: true
+    tty: true
+
+    volumes:
+      - ./backend/:/backend/
+    # command: fastapi dev app/main.py

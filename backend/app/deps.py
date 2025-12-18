@@ -1,10 +1,9 @@
-from typing import Annotated, AsyncGenerator, TypeAlias
+from typing import Annotated, AsyncGenerator
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# from app.model_db import QuestionDB, AnswerDB
 from app.db import async_engine
+from app.model_db import AnalyticsDB, UserDB, VideoDB
 
 
 async def create_session() -> AsyncGenerator[AsyncSession]:
@@ -14,32 +13,41 @@ async def create_session() -> AsyncGenerator[AsyncSession]:
         yield session
 
 
-SessionDep: TypeAlias = Annotated[AsyncSession, Depends(create_session)]
+SessionDep = Annotated[AsyncSession, Depends(create_session)]
 
 
-# NOTE: crud operation
-async def get_user_db(session: SessionDep, answer_id: int) -> UserDB:
-    statement = select().where(UserDB.id == answer_id)
-    session_user = await session.scalar(statement)
-    if session_user is None:
+async def get_user_obj(session: SessionDep, id: int) -> UserDB:
+    user = await session.get(UserDB, id)
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User wasn't found"
         )
-    return session_user
+    return user
 
 
-CurrentAnswerDep: TypeAlias = Annotated[AnswerDB, Depends(get_answer_db)]
+UserDep = Annotated[UserDB, Depends(get_user_obj)]
 
 
-# NOTE: crud operation
-async def get_question_db(session: SessionDep, question_id: int) -> QuestionDB:
-    statement = select(QuestionDB).where(QuestionDB.id == question_id)
-    session_question = await session.scalar(statement)
-    if session_question is None:
+async def get_video_obj(session: SessionDep, id: int) -> VideoDB:
+    video = await session.get(VideoDB, id)
+    if video is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Question wasn't found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Video id={id} wasn't found"
         )
-    return session_question
+    return video
 
 
-CurrentQuestionDep: TypeAlias = Annotated[QuestionDB, Depends(get_question_db)]
+VideoDep = Annotated[VideoDB, Depends(get_video_obj)]
+
+
+async def get_analytics_obj(session: SessionDep, id) -> AnalyticsDB:
+    analytics = await session.get(AnalyticsDB, id)
+    if analytics is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Analytics id={id} wasn't found",
+        )
+    return analytics
+
+
+AnalyticsDep = Annotated[AnalyticsDB, Depends(get_analytics_obj)]

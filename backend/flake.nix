@@ -14,6 +14,8 @@
         with pkgs;
         (python313.withPackages (
           python-pkgs: with python-pkgs; [
+            pyjwt
+            passlib
             alembic
             fastapi
             fastapi-cli

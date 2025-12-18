@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import MetaData, ForeignKey, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.types import DateTime
 
 
 # NOTE: Alembic naming constraints convention
@@ -26,9 +27,11 @@ class UserDB(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    login: Mapped[str]
-    password: Mapped[str]
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    login: Mapped[str] = mapped_column(unique=True)
+    hashed_password: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     videos: Mapped[list["VideoDB"]] = relationship(
         back_populates="user", cascade="save-update, delete"
@@ -39,16 +42,21 @@ class VideoDB(Base):
     __tablename__ = "video"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    video_path: Mapped[str]
+    video_path: Mapped[str] = mapped_column(unique=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
     user: Mapped[UserDB] = relationship(back_populates="videos")
-    analytics: Mapped["AnalyticsDB"] = relationship(back_populates="video")
+    analytics: Mapped["AnalyticsDB"] = relationship(
+        back_populates="video", cascade="save-update, delete"
+    )
 
 
 class AnalyticsDB(Base):
     __tablename__ = "analytics"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    # TODO: check that JSON is correct format
-    bbox_data: Mapped[JSON]
+    # dict[int, list[int]]
+    bbox_data: Mapped[dict] = mapped_column(JSONB)
+    video_id: Mapped[int] = mapped_column(ForeignKey("video.id"))
+
+    video: Mapped[VideoDB] = relationship(back_populates="analytics")
