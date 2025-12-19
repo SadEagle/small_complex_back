@@ -17,10 +17,12 @@ async def get_video_list_db(session: AsyncSession, user_id: int) -> Sequence[Vid
     return user_videos_list
 
 
-async def create_video_db(session: AsyncSession, video_create: VideoCreate) -> VideoDB:
+async def create_video_db(
+    session: AsyncSession, video_create: VideoCreate, user_id: int
+) -> VideoDB:
     # TODO: check do i need to set up model_dump("JSON")
     video_dict = video_create.model_dump(exclude_unset=True)
-    video = VideoDB(**video_dict)
+    video = VideoDB(**video_dict, user_id=user_id)
 
     session.add(video)
     await session.commit()

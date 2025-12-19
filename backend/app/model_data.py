@@ -1,31 +1,34 @@
 from datetime import datetime
-from pydantic import BaseModel, JsonValue, TypeAdapter
+from typing import Annotated, TypeAlias
+from pydantic import Field, BaseModel, JsonValue, TypeAdapter
 
 
 VideoList = TypeAdapter(list["Video"])
 
+# Bcrypt may has up to 72 characters passwd
+PasswordType: TypeAlias = Annotated[str, Field(max_length=72)]
+
 
 class UserBase(BaseModel):
     login: str
-    created_at: datetime
 
 
 class UserPublic(UserBase):
     id: int
+    created_at: datetime
 
 
 class UserCreate(UserBase):
-    password: str
+    password: PasswordType
 
 
 class UserUpdate(BaseModel):
     login: str | None
-    password: str | None
+    password: PasswordType | None
 
 
 class VideoBase(BaseModel):
     video_path: str
-    user_id: int
 
 
 class Video(VideoBase):
@@ -38,7 +41,6 @@ class VideoCreate(VideoBase):
 
 class VideoUpdate(BaseModel):
     video_path: str | None = None
-    user_id: int | None = None
 
 
 class AnalyticsBase(BaseModel):
@@ -56,7 +58,6 @@ class AnalyticsCreate(AnalyticsBase):
 
 # May be needed when will add new columns
 class AnalyticsUpdate(BaseModel):
-    id: int
     bbox_data: JsonValue | None = None
     video_id: int
 

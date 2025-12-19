@@ -8,22 +8,15 @@ from app.crud.user_crud import create_user_db, update_user_db
 user_route = APIRouter(prefix="/user", tags=["user"])
 
 
-@user_route.get("/{id}/videos")
-async def get_user_video_list(session: SessionDep, id: int) -> list[Video]:
-    video_list = await get_user_video_list(session, id)
-    return VideoList.validate_python(video_list, from_attributes=True)
-
-
-@user_route.get("/{id}")
+@user_route.get("/")
 async def get_user(user: UserDep) -> UserPublic:
     return UserPublic.model_validate(user, from_attributes=True)
 
 
-# TODO: add hashed_passwd field instead of passwd
-# @user_route.post("/", status_code=status.HTTP_201_CREATED)
-# async def create_user(session: SessionDep, user_create: UserCreate) -> UserPublic:
-#     user = await create_user_db(session, user_create)
-#     return UserPublic.model_validate(user, from_attributes=True)
+@user_route.post("/", status_code=status.HTTP_201_CREATED)
+async def create_user(session: SessionDep, user_create: UserCreate) -> UserPublic:
+    user = await create_user_db(session, user_create)
+    return UserPublic.model_validate(user, from_attributes=True)
 
 
 @user_route.patch("/{id}")

@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model_db import UserDB
 from app.model_data import UserCreate, UserUpdate
+from app.secret import get_passwd_hash
 
 
 async def get_user_by_name_db(session: AsyncSession, user_login: str) -> UserDB | None:
@@ -13,8 +14,9 @@ async def get_user_by_name_db(session: AsyncSession, user_login: str) -> UserDB 
 
 async def create_user_db(session: AsyncSession, user_create: UserCreate) -> UserDB:
     # TODO: check do i need to set up model_dump("JSON")
-    user_dict = user_create.model_dump(exclude_unset=True)
-    user = UserDB(**user_dict)
+    hashed_password = get_passwd_hash(user_create.password)
+    user_dict = user_create.model_dump(exclude={"password"})
+    user = UserDB(**user_dict, hashed_password=hashed_password)
 
     session.add(user)
     await session.commit()

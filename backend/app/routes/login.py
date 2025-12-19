@@ -13,7 +13,7 @@ from app.config import settings
 login_route = APIRouter(prefix="/login", tags=["login"])
 
 
-@login_route.post("/user_token")
+@login_route.post("/access_token")
 async def generate_user_token(
     session: SessionDep,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -22,7 +22,7 @@ async def generate_user_token(
     if user is None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "User login wasn't found")
 
-    if not verify_passwd_hash(form_data.password, user.hashed_passwd):
+    if not verify_passwd_hash(form_data.password, user.hashed_password):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Wrong login or password")
 
     access_token = create_access_token(

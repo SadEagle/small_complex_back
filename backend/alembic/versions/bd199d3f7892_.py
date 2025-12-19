@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 7c794cfb305e
+Revision ID: bd199d3f7892
 Revises: 
-Create Date: 2025-12-18 12:43:47.884697
+Create Date: 2025-12-19 07:48:27.301158
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '7c794cfb305e'
+revision: str = 'bd199d3f7892'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,16 +24,18 @@ def upgrade() -> None:
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('login', sa.String(), nullable=False),
-    sa.Column('password', sa.String(), nullable=False),
+    sa.Column('hashed_password', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_user'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_user')),
+    sa.UniqueConstraint('login', name=op.f('uq_user_login'))
     )
     op.create_table('video',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('video_path', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], name=op.f('fk_video_user_id_user')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_video'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_video')),
+    sa.UniqueConstraint('video_path', name=op.f('uq_video_video_path'))
     )
     op.create_table('analytics',
     sa.Column('id', sa.Integer(), nullable=False),

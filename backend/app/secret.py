@@ -6,7 +6,7 @@ from app.model_data import TokenData
 from app.config import settings
 
 
-crypto_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+crypto_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 def get_passwd_hash(passwd: str) -> str:
