@@ -23,7 +23,6 @@
             asyncpg
             pytest
             httpx
-            bcrypt
             passlib
             pyjwt
             python-multipart

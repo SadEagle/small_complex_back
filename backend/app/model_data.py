@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Annotated, TypeAlias
+from typing import Annotated, Sequence, TypeAlias
 from pydantic import Field, BaseModel, JsonValue, TypeAdapter
 
 
-VideoList = TypeAdapter(list["Video"])
+VideoList = TypeAdapter(Sequence["Video"])
 
 # Bcrypt may has up to 72 characters passwd
 PasswordType: TypeAlias = Annotated[str, Field(max_length=72)]
@@ -33,6 +33,7 @@ class VideoBase(BaseModel):
 
 class Video(VideoBase):
     id: int
+    analytics_id: int
 
 
 class VideoCreate(VideoBase):
@@ -45,7 +46,6 @@ class VideoUpdate(BaseModel):
 
 class AnalyticsBase(BaseModel):
     bbox_data: JsonValue
-    video_id: int
 
 
 class Analytics(AnalyticsBase):
@@ -59,7 +59,6 @@ class AnalyticsCreate(AnalyticsBase):
 # May be needed when will add new columns
 class AnalyticsUpdate(BaseModel):
     bbox_data: JsonValue | None = None
-    video_id: int
 
 
 class TokenCreate(BaseModel):
@@ -69,3 +68,8 @@ class TokenCreate(BaseModel):
 
 class TokenData(BaseModel):
     user_id: int
+
+
+# NOTE: Need if TypeAdapter was defined before inner classes
+# Ref: https://docs.pydantic.dev/2.11/errors/usage_errors/#class-not-fully-defined
+VideoList.rebuild()

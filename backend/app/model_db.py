@@ -44,6 +44,10 @@ class VideoDB(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     video_path: Mapped[str] = mapped_column(unique=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    # Use video_id of one-one with prevaling cascade rules
+    analytics_id: Mapped[int | None] = mapped_column(
+        ForeignKey("analytics.id"), unique=True, nullable=True
+    )
 
     user: Mapped[UserDB] = relationship(back_populates="videos")
     analytics: Mapped["AnalyticsDB"] = relationship(
@@ -57,6 +61,5 @@ class AnalyticsDB(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     # dict[int, list[int]]
     bbox_data: Mapped[dict] = mapped_column(JSONB)
-    video_id: Mapped[int] = mapped_column(ForeignKey("video.id"))
 
     video: Mapped[VideoDB] = relationship(back_populates="analytics")

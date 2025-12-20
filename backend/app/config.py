@@ -1,11 +1,9 @@
 from pydantic import computed_field, PostgresDsn
 from pydantic_settings import BaseSettings
 
-from secrets import token_urlsafe
-
 
 class Settings(BaseSettings):
-    SECRET_KEY: str = token_urlsafe(32)
+    SECRET_KEY: str
     JWT_HASH_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1000
 

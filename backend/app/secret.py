@@ -23,7 +23,7 @@ def create_access_token(
 ) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
     encode_data = {
-        **data.model_dump(),
+        **data.model_dump(mode="json"),
         "exp": expire,
     }
     encoded_jwt = jwt.encode(

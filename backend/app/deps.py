@@ -6,7 +6,6 @@ from fastapi.security import OAuth2PasswordBearer
 from app.db import async_engine
 from app.model_db import AnalyticsDB, UserDB, VideoDB
 from app.secret import verify_access_token
-from app.model_data import TokenData
 
 
 async def create_session() -> AsyncGenerator[AsyncSession]:
@@ -18,7 +17,7 @@ async def create_session() -> AsyncGenerator[AsyncSession]:
 
 SessionDep = Annotated[AsyncSession, Depends(create_session)]
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login/access_token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 TokenDep = Annotated[str, Depends(oauth2_scheme)]
 
 
@@ -52,16 +51,3 @@ async def get_video_obj(session: SessionDep, id: int) -> VideoDB:
 
 
 VideoDep = Annotated[VideoDB, Depends(get_video_obj)]
-
-
-async def get_analytics_obj(session: SessionDep, id) -> AnalyticsDB:
-    analytics = await session.get(AnalyticsDB, id)
-    if analytics is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Analytics id={id} wasn't found",
-        )
-    return analytics
-
-
-AnalyticsDep = Annotated[AnalyticsDB, Depends(get_analytics_obj)]

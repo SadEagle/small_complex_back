@@ -1,14 +1,10 @@
 from typing import Sequence
 
-from pydantic import TypeAdapter
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.model_db import VideoDB
-from app.model_data import Video, VideoCreate, VideoUpdate
-
-
-ListVideo = TypeAdapter(list[Video])
+from app.model_data import VideoCreate, VideoUpdate
 
 
 async def get_video_list_db(session: AsyncSession, user_id: int) -> Sequence[VideoDB]:
@@ -20,7 +16,6 @@ async def get_video_list_db(session: AsyncSession, user_id: int) -> Sequence[Vid
 async def create_video_db(
     session: AsyncSession, video_create: VideoCreate, user_id: int
 ) -> VideoDB:
-    # TODO: check do i need to set up model_dump("JSON")
     video_dict = video_create.model_dump(exclude_unset=True)
     video = VideoDB(**video_dict, user_id=user_id)
 
