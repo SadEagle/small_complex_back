@@ -9,6 +9,7 @@ The project contain current points:
 - [x] Alembic migrations
 - [x] Docker/Compose
 - [x] Async
+- [ ] RabbitMQ
 
 Note, `flake.nix` and `flake.lock` are NixOS specific package manager files
 
