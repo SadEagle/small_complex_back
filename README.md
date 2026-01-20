@@ -8,7 +8,6 @@ The project contain current points:
 - [x] SQLAlchemy ORM + Pydantic
 - [x] Alembic migrations
 - [x] Docker/Compose
-- [x] Async
 
 Note, `flake.nix` and `flake.lock` are NixOS specific package manager files
 
